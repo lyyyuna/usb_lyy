@@ -13,4 +13,7 @@
 #define uint64   unsigned long long int
 #define int64    signed long long int
 
+#define DEBUG0
+#define DEBUG1
+
 #endif

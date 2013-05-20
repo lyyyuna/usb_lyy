@@ -32,11 +32,47 @@ sbit D12_INT    =       P3^2;
 #define d12_setportin()     D12_DATA=0xff
 #define d12_setportout()    
 
-#define READ_ID    0xfd
+
+#define Read_ID  0xFD
+
+
+#define D12_SET_MODE  0xF3
+
+
+#define READ_INTERRUPT_REGISTER  0xF4
+
+
+#define D12_READ_BUFFER 0xF0
+
+
+#define D12_WRITE_BUFFER 0xF0
+
+
+#define D12_CLEAR_BUFFER    0xF2
+
+
+#define D12_VALIDATE_BUFFER 0xFA
+
+
+#define D12_ACKNOWLEDGE_SETUP 0xF1
+
+
+#define D12_SET_ADDRESS_ENABLE 0xD0
+
+
+#define D12_SET_ENDPOINT_ENABLE 0xD8
 
 extern void d12_writecommand(uint8);
-uint8 d12_readbyte(void);
-uint16 d12_readID(void);
+extern uint8 d12_readbyte(void);
+extern uint16 d12_readID(void);
+extern void d12_writebyte(uint8);
+extern uint8 d12_readendpbuffer(uint8 endp, uint8 len, uint8 *buf);
+extern uint8 d12_writeendpbuffer(uint8 endp, uint8 len, uint8 *buf);
+extern void d12_clearbuffer(void);
+extern uint8 d12_readendpoint_laststatus(uint8 endp);
+extern void d12_acksetup(void);
+extern void d12_setaddr(uint8 addr);
+extern void d12_setendpenable(uint8 enable);
 
 #endif
 

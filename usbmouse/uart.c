@@ -64,3 +64,41 @@ void printshortIntHex(uint16 x)
     }
     prints(display_buffer);
 }
+
+#if (defined DEBUG0)||(defined DEBUG1)
+void printc(uint8 x)
+{
+ sending=1;
+ SBUF=x;
+ while(sending);
+}
+
+void printHex(uint8 x)
+{
+ Printc('0');
+ Printc('x');
+ Printc(HexTable[x>>4]);
+ Printc(HexTable[x&0xf]);
+ Printc(' ');
+}
+#endif
+
+#ifdef DEBUG1
+void printLongInt(uint32 x)
+{
+ int8 i;
+ uint8 display_buffer[10];
+
+ for(i=9;i>=0;i--)
+ {
+  display_buffer[i]='0'+x%10;
+  x/=10;
+ }
+ for(i=0;i<9;i++)
+ {
+  if(display_buffer[i]!='0')break;
+ }
+ for(;i<10;i++)uart_putchar(display_buffer[i]);
+}
+
+#endif
