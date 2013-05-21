@@ -22,6 +22,7 @@
 
 #define SET_IDLE 0x0A
 
+extern void delay_xms(uint16 x);
 
 extern void usb_disconnect(void);   /* disconnect the usb */
 extern void usb_connect(void);      /* connect the usb */
