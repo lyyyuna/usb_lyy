@@ -275,7 +275,7 @@ void usb_disconnect(void)
 void usb_connect(void)
 {
     #ifdef DEBUG0
-    prints();
+    prints("连接USB。\r\n");
     #endif
     d12_writecommand(D12_SET_MODE);
     d12_writebyte(0x16);
@@ -285,7 +285,7 @@ void usb_connect(void)
 void usb_bussuspend(void)
 {
     #ifdef DEBUG0
-    prints("");
+    prints("USB总线挂起。\r\n");
     #endif
     /* do nothing */
 }
@@ -293,7 +293,7 @@ void usb_bussuspend(void)
 void usb_busreset(void)
 {
     #ifdef DEBUG0
-    prints("");
+    prints("USB总线复位。\r\n");
     #endif
     ep1in_isbusy = 0;
 }
@@ -322,7 +322,7 @@ static void usb_ep0_senddata(void)
 void usb_ep0out(void)
 {
     #ifdef DEBUG0
-    prints("");
+    prints("USB端点0输出中断。\r\n");
     #endif
     if (d12_readendpoint_laststatus(0) & 0x20) {
         d12_readendpbuffer(0, 16, edp0_buffer);
@@ -340,22 +340,22 @@ void usb_ep0out(void)
             switch ((bmRequstType>>5) & 0x03) {
                 case 0:
                     #ifdef DEBUG0
-                    prints("");
+                    prints("USB标准输入请求：");
                     #endif
                     switch (bRequest) {
                         case GET_CONFIGURATION:
                             #ifdef DEBUG0
-                            prints("");
+                            prints("获取配置。\r\n");
                             #endif
                             break;
                         case GET_DESCRIPTOR:
                             #ifdef DEBUG0
-                            prints("");
+                            prints("获取描述符——");
                             #endif
                             switch ((wValue>>8) & 0xff) {
                                 case DEVICE_DESCRIPTOR:
                                     #ifdef DEBUG0
-                                    prints("");
+                                    prints("设备描述符。\r\n");
                                     #endif
                                     pSendData = DeviceDescriptor;
                                     /* the send length */
@@ -370,7 +370,7 @@ void usb_ep0out(void)
 
                                 case CONFIGURATION_DESCRIPTOR:
                                     #ifdef DEBUG0
-                                    prints("");
+                                    prints("配置描述符。\r\n");
                                     #endif
                                     pSendData = ConfigurationDescriptor;
                                     SendLength = ConfigurationDescriptor[3];
@@ -385,40 +385,40 @@ void usb_ep0out(void)
 
                                 case STRING_DESCRIPTOR:
                                     #ifdef DEBUG0
-                                    prints("");
+                                    prints("字符串描述符");
                                     #endif
                                     switch (wValue & 0xff) {
                                         case 0: /* language id */
                                             #ifdef DEBUG0
-                                            prints("");
+                                            prints("(语言ID)。\r\n");
                                             #endif
                                             pSendData = LanguageId;
                                             SendLength = LanguageId[0];
                                             break;
                                         case 1: /* manufacture id */
                                             #ifdef DEBUG0
-                                            prints("");
+                                            prints("(厂商描述)。\r\n");
                                             #endif
                                             pSendData = ManufacturerStringDescriptor;
                                             SendLength = ManufacturerStringDescriptor[0];
                                             break;
                                         case 2:
                                             #ifdef DEBUG0
-                                            prints("");
+                                            prints("(产品描述)。\r\n");
                                             #endif
                                             pSendData = ProductStringDescriptor;
                                             SendLength = ProductStringDescriptor[0];
                                             break;
                                         case 3:
                                             #ifdef DEBUG0
-                                            prints("");
+                                            prints("(产品序列号)。\r\n");
                                             #endif
                                             pSendData = SerialNumberStringDescriptor;
                                             SendLength = SerialNumberStringDescriptor[0];
                                             break;
                                         default:
                                             #ifdef DEBUG0
-                                            prints("");
+                                            prints("(未知的索引值)。\r\n");
                                             #endif
                                             /* if it is a unknown descriptor, return a 0 length packet */
                                             SendLength = 0;
@@ -436,7 +436,7 @@ void usb_ep0out(void)
 
                                 case REPORT_DESCRIPTOR:
                                     #ifdef DEBUG0
-                                    prints("");
+                                    prints("报告描述符。\r\n");
                                     #endif
                                     pSendData = ReportDescriptor;
                                     SendLength = sizeof(ReportDescriptor);
@@ -450,9 +450,9 @@ void usb_ep0out(void)
 
                                 default:
                                     #ifdef DEBUG0
-                                    prints("");
-                                    printHex("");
-                                    prints("");
+                                    prints("其他描述符，描述符代码：");
+                                    printHex((wValue>>8)&0xFF);
+                                    prints("\r\n");
                                     #endif
                                     break;
                             }
@@ -460,25 +460,25 @@ void usb_ep0out(void)
 
                         case GET_INTERFACE:
                             #ifdef DEBUG0
-                            prints("");
+                            prints("获取接口。\r\n");
                             #endif
                             break;
 
                         case GET_STATUS:
                             #ifdef DEBUG0
-                            prints("");
+                            prints("获取状态。\r\n");
                             #endif
                             break;
 
                         case SYNCH_FRAME:
                             #ifdef DEBUG0
-                            prints("");
+                            prints("同步帧。\r\n");
                             #endif
                             break;
 
                         default:
                             #ifdef DEBUG0
-                            prints("");
+                            prints("错误：未定义的标准输入请求。\r\n");
                             #endif
                             break;
                     }
@@ -486,19 +486,19 @@ void usb_ep0out(void)
 
                 case 1: /* class request */
                     #ifdef DEBUG0
-                    prints("");
+                    prints("USB类输入请求：\r\n");
                     #endif
                     break;
 
                 case 2: /* manufacture request */
                     #ifdef DEBUG0
-                    prints("");
+                    prints("USB厂商输入请求：\r\n");
                     #endif
                     break;
 
                 default:
                     #ifdef DEBUG0
-                    prints("");
+                    prints("错误：未定义的输入请求。\r\n");
                     #endif
                     break;
 
@@ -508,22 +508,24 @@ void usb_ep0out(void)
             switch ((bmRequestType>>5) & 0x03) {
                 case 0: /* standard request */
                     #ifdef DEBUG0
-                    prints("");
+                    prints("USB标准输出请求：");
                     #endif
 
                     /* the following is some standard request */
                     switch (bRequest) {
                         case CLEAR_FEATURE:
                             #ifdef DEBUG0
-                            prints("");
+                            prints("清除特性。\r\n");
                             #endif
                             break;
 
                         case SET_ADDRESS:
                             #ifdef DEBUG0
-                            prints("");
+                            prints("设置地址。地址为：");
+                            printHex(wValue&0xFF);
+                            prints("\r\n");
                             #endif
-                            d12_setaddr();
+                            d12_setaddr(wValue & 0xff);
                             SendLength = 0;
                             NeedZeroPacket = 1;
                             usb_ep0_senddata();
@@ -531,7 +533,7 @@ void usb_ep0out(void)
 
                         case SET_CONFIGURATION:
                             #ifdef DEBUG0
-                            prints("");
+                            prints("设置配置。\r\n");
                             #endif
                             configvalue = wValue & 0xff;
                             d12_setendpenable(configvalue);
@@ -542,25 +544,25 @@ void usb_ep0out(void)
 
                         case SET_DESCRIPTOR:
                             #ifdef DEBUG0
-                            prints("");
+                            prints("设置描述符。\r\n");
                             #endif
                             break;
 
                         case SET_FEATURE:
                             #ifdef DEBUG0
-                            prints("");
+                            prints("设置特性。\r\n");
                             #endif
                             break;
 
                         case SET_INTERFACE:
                             #ifdef DEBUG0
-                            prints("");
+                            prints("设置接口。\r\n");
                             #endif
                             break;
 
                         default:
                             #ifdef DEBUG0
-                            prints("");
+                            prints("错误：未定义的标准输出请求。\r\n");
                             #endif
                             break;
                     }
@@ -568,12 +570,12 @@ void usb_ep0out(void)
 
                 case 1:
                     #ifdef DEBUG0
-                    prints("");
+                    prints("USB类输出请求：");
                     #endif
                     switch (bRequest) {
                         case SET_IDLE:
                             #ifdef DEBUG0
-                            prints("");
+                            prints("设置空闲。\r\n");
                             #endif
                             SendLength = 0;
                             NeedZeroPacket = 1;
@@ -582,7 +584,7 @@ void usb_ep0out(void)
 
                         default:
                             #ifdef DEBUG0
-                            prints("");
+                            prints("未知请求。\r\n");
                             #endif
                             break;
                     }
@@ -590,13 +592,13 @@ void usb_ep0out(void)
 
                 case 2:
                     #ifdef DEBUG0
-                    prints("");
+                    prints("USB厂商输出请求：\r\n");
                     #endif
                     break;
 
                 default:
                     #ifdef DEBUG0
-                    prints("");
+                    prints("错误：未定义的输出请求。\r\n");
                     #endif
                     break;
             }
@@ -611,7 +613,7 @@ void usb_ep0out(void)
 void usb_ep0in(void)
 {
     #ifdef DEBUG0
-    prints("");
+    prints("USB端点0输入中断。\r\n");
     #endif
     d12_readendpoint_laststatus(1);
     usb_ep0_senddata();
@@ -620,14 +622,14 @@ void usb_ep0in(void)
 void usb_ep1out(void)
 {
     #ifdef DEBUG0
-    prints("");
+    prints("USB端点1输出中断。\r\n");
     #endif
 }
 
 void usb_ep1in(void)
 {
     #ifdef DEBUG0
-    prints("");
+    prints("USB端点1输入中断。\r\n");
     #endif
     d12_readendpoint_laststatus(3);
     ep1in_isbusy = 0;
@@ -636,14 +638,14 @@ void usb_ep1in(void)
 void usb_ep2out(void)
 {
     #ifdef DEBUG0
-    prints("");
+    prints("USB端点2输出中断。\r\n");
     #endif
 }
 
 void usb_ep2in(void)
 {
     #ifdef DEBUG0
-    prints("");
+    prints("USB端点2输入中断。\r\n");
     #endif
 }
 
