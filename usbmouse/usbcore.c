@@ -367,12 +367,284 @@ void usb_ep0out(void)
                                     else SendLength = wLength;
                                     usb_ep0_senddata();
                                     break;
+
+                                case CONFIGURATION_DESCRIPTOR:
+                                    #ifdef DEBUG0
+                                    prints("");
+                                    #endif
+                                    pSendData = ConfigurationDescriptor;
+                                    SendLength = ConfigurationDescriptor[3];
+                                    SendLength = SendLength*256 + ConfigurationDescriptor[2];
+                                    if (wLength > SendLength) {
+                                        if (SendLength % DeviceDescriptor[7] == 0)
+                                            NeedZeroPacket = 1;
+                                    }
+                                    else SendLength = wLength;
+                                    usb_ep0_senddata();
+                                    break;
+
+                                case STRING_DESCRIPTOR:
+                                    #ifdef DEBUG0
+                                    prints("");
+                                    #endif
+                                    switch (wValue & 0xff) {
+                                        case 0: /* language id */
+                                            #ifdef DEBUG0
+                                            prints("");
+                                            #endif
+                                            pSendData = LanguageId;
+                                            SendLength = LanguageId[0];
+                                            break;
+                                        case 1: /* manufacture id */
+                                            #ifdef DEBUG0
+                                            prints("");
+                                            #endif
+                                            pSendData = ManufacturerStringDescriptor;
+                                            SendLength = ManufacturerStringDescriptor[0];
+                                            break;
+                                        case 2:
+                                            #ifdef DEBUG0
+                                            prints("");
+                                            #endif
+                                            pSendData = ProductStringDescriptor;
+                                            SendLength = ProductStringDescriptor[0];
+                                            break;
+                                        case 3:
+                                            #ifdef DEBUG0
+                                            prints("");
+                                            #endif
+                                            pSendData = SerialNumberStringDescriptor;
+                                            SendLength = SerialNumberStringDescriptor[0];
+                                            break;
+                                        default:
+                                            #ifdef DEBUG0
+                                            prints("");
+                                            #endif
+                                            /* if it is a unknown descriptor, return a 0 length packet */
+                                            SendLength = 0;
+                                            NeedZeroPacket = 1;
+                                            break;
+                                    }
+                                    /* if the requested length is longer */
+                                    if (wLength > SendLength) {
+                                        if (SendLength % DeviceDescriptor[7] == 0)
+                                            NeedZeroPacket = 1;
+                                    }
+                                    else SendLength = wLength;
+                                    usb_ep0_senddata();
+                                    break;
+
+                                case REPORT_DESCRIPTOR:
+                                    #ifdef DEBUG0
+                                    prints("");
+                                    #endif
+                                    pSendData = ReportDescriptor;
+                                    SendLength = sizeof(ReportDescriptor);
+                                    if (wLength > SendLength) {
+                                        if (SendLength % DeviceDescriptor[7] == 0)
+                                            NeedZeroPacket = 1;
+                                    }
+                                    else SendLength = wLength;
+                                    usb_ep0_senddata();
+                                    break;
+
+                                default:
+                                    #ifdef DEBUG0
+                                    prints("");
+                                    printHex("");
+                                    prints("");
+                                    #endif
+                                    break;
                             }
+                            break;
+
+                        case GET_INTERFACE:
+                            #ifdef DEBUG0
+                            prints("");
+                            #endif
+                            break;
+
+                        case GET_STATUS:
+                            #ifdef DEBUG0
+                            prints("");
+                            #endif
+                            break;
+
+                        case SYNCH_FRAME:
+                            #ifdef DEBUG0
+                            prints("");
+                            #endif
+                            break;
+
+                        default:
+                            #ifdef DEBUG0
+                            prints("");
+                            #endif
+                            break;
                     }
+                    break;
+
+                case 1: /* class request */
+                    #ifdef DEBUG0
+                    prints("");
+                    #endif
+                    break;
+
+                case 2: /* manufacture request */
+                    #ifdef DEBUG0
+                    prints("");
+                    #endif
+                    break;
+
+                default:
+                    #ifdef DEBUG0
+                    prints("");
+                    #endif
+                    break;
 
             }
         }
+        else {
+            switch ((bmRequestType>>5) & 0x03) {
+                case 0: /* standard request */
+                    #ifdef DEBUG0
+                    prints("");
+                    #endif
+
+                    /* the following is some standard request */
+                    switch (bRequest) {
+                        case CLEAR_FEATURE:
+                            #ifdef DEBUG0
+                            prints("");
+                            #endif
+                            break;
+
+                        case SET_ADDRESS:
+                            #ifdef DEBUG0
+                            prints("");
+                            #endif
+                            d12_setaddr();
+                            SendLength = 0;
+                            NeedZeroPacket = 1;
+                            usb_ep0_senddata();
+                            break;
+
+                        case SET_CONFIGURATION:
+                            #ifdef DEBUG0
+                            prints("");
+                            #endif
+                            configvalue = wValue & 0xff;
+                            d12_setendpenable(configvalue);
+                            SendLength = 0;
+                            NeedZeroPacket = 1;
+                            usb_ep0_senddata();
+                            break;
+
+                        case SET_DESCRIPTOR:
+                            #ifdef DEBUG0
+                            prints("");
+                            #endif
+                            break;
+
+                        case SET_FEATURE:
+                            #ifdef DEBUG0
+                            prints("");
+                            #endif
+                            break;
+
+                        case SET_INTERFACE:
+                            #ifdef DEBUG0
+                            prints("");
+                            #endif
+                            break;
+
+                        default:
+                            #ifdef DEBUG0
+                            prints("");
+                            #endif
+                            break;
+                    }
+                    break;
+
+                case 1:
+                    #ifdef DEBUG0
+                    prints("");
+                    #endif
+                    switch (bRequest) {
+                        case SET_IDLE:
+                            #ifdef DEBUG0
+                            prints("");
+                            #endif
+                            SendLength = 0;
+                            NeedZeroPacket = 1;
+                            usb_ep0_senddata();
+                            break;
+
+                        default:
+                            #ifdef DEBUG0
+                            prints("");
+                            #endif
+                            break;
+                    }
+                    break;
+
+                case 2:
+                    #ifdef DEBUG0
+                    prints("");
+                    #endif
+                    break;
+
+                default:
+                    #ifdef DEBUG0
+                    prints("");
+                    #endif
+                    break;
+            }
+        }
     }
+    else {
+        d12_readendpbuffer(0, 16, edp0_buffer);
+        d12_clearbuffer();
+    }
+}
+
+void usb_ep0in(void)
+{
+    #ifdef DEBUG0
+    prints("");
+    #endif
+    d12_readendpoint_laststatus(1);
+    usb_ep0_senddata();
+}
+
+void usb_ep1out(void)
+{
+    #ifdef DEBUG0
+    prints("");
+    #endif
+}
+
+void usb_ep1in(void)
+{
+    #ifdef DEBUG0
+    prints("");
+    #endif
+    d12_readendpoint_laststatus(3);
+    ep1in_isbusy = 0;
+}
+
+void usb_ep2out(void)
+{
+    #ifdef DEBUG0
+    prints("");
+    #endif
+}
+
+void usb_ep2in(void)
+{
+    #ifdef DEBUG0
+    prints("");
+    #endif
 }
 
 
