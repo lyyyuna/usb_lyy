@@ -65,6 +65,63 @@ code uint8 DeviceDescriptor[0x12] = {
 0x01
 };
 
+
+/* HID report descriptor */
+code uint8 ReportDescriptor[] = {
+/* Usage Page (Generic Desktop) */
+0x05, 0x01,
+/* Usage (Mouse) */
+0x09, 0x02,
+/*      Collection (Application) */
+0xa1, 0x01,
+/*      Usage (Pointer) */
+0x09, 0x01,
+/*      Collection (Physical) */
+0xa1, 0x00,
+/*          Usage Page (Buttons) */
+0x05, 0x09,
+/*          Usage Minimum (1) */
+0x19, 0x01,
+/*          Usage Maximum (2) */
+0x29, 0x03,
+/*          Logical Minimum (0) */
+0x15, 0x00,
+/*          Logical Maximum (1) */
+0x25, 0x01,
+/*          Report Count (3) */
+0x95, 0x03,
+/*          Report Size (1) */
+0x75, 0x01,
+/*          Input (Data, Variable, Absolute) */
+0x81, 0x02,
+/*          Report Count (1) */
+0x95, 0x01,
+/*          Report Size (5) */
+0x75, 0x05,
+/*          Input (Constant) */
+0x81, 0x03,
+/*          Usage Page (Generic Page) */
+0x05, 0x01,
+/*          Usage (x) */
+0x09, 0x30,
+/*          Usage (y) */
+0x09, 0x31,
+/*          Logical Minimum (-127) */
+0x15, 0x81,
+/*          Logical Maximum (127) */
+0x25, 0x7f,
+/*          Report Size (8) */
+0x75, 0x08,
+/*          Report Count (3) */
+0x95, 0x03,
+/*          Input (Data, Variable, Relative) */
+0x81, 0x06,
+/*      End Collection */
+0xc0,
+/* End Collection */
+};
+
+
 /* configuration descriptor */
 /* the total length is 9 + 9 + 9 + 7 */
 code uint8 ConfigurationDescriptor[9+9+9+7] = {
