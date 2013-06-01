@@ -75,11 +75,11 @@ void printc(uint8 x)
 
 void printHex(uint8 x)
 {
- Printc('0');
- Printc('x');
- Printc(HexTable[x>>4]);
- Printc(HexTable[x&0xf]);
- Printc(' ');
+ printc('0');
+ printc('x');
+ printc(HexTable[x>>4]);
+ printc(HexTable[x&0xf]);
+ printc(' ');
 }
 #endif
 

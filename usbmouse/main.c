@@ -17,6 +17,38 @@ code uint8 HeadTable[][74] = {
 "********************************************************************\r\n",
 };
 
+void SendReport(void)
+{
+    uint8 Buf[4] = {0, 0, 0, 0};
+
+    KeyUp &=~(KEY1|KEY2|KEY3|KEY4|KEY5|KEY6);
+    KeyDown &=~(KEY1|KEY2|KEY3|KEY4|KEY5|KEY6);
+
+    if ((KeyPress&(~(KEY7|KEY8))) || KeyUp || KeyDown) {
+        if (KeyPress & KEY1)
+            Buf[1] = -1;
+        if (KeyPress & KEY2)
+            Buf[1] = 1;
+        if (KeyPress & KEY3)
+            Buf[2] = -1;
+        if (KeyPress & KEY4)
+            Buf[2] = 1;
+        if (KeyPress & KEY5)
+            Buf[3] = -1;
+        if (KeyPress & KEY6)
+            Buf[3] = 1;
+        if (KeyPress & KEY7)
+            Buf[0] |= 0x01;
+        if (KeyPress &KEY8)
+            Buf[0] |= 0x02;
+
+        d12_writeendpbuffer(3, 4, Buf);
+        ep1in_isbusy = 1;
+    }
+    KeyUp = 0;
+    KeyDown = 0;
+}
+
 void main(void)
 {
     uint8 i;
@@ -43,7 +75,7 @@ void main(void)
 
     usb_disconnect();
     usb_connect();
-    ConfigValue = 0;
+    configvalue = 0;
 
     while(1) {
         if ( d12_getintpin() == 0) {

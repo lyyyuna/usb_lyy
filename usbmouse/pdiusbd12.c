@@ -1,6 +1,7 @@
 #include <reg52.h>
 #include "config.h"
 #include "pdiusbd12.h"
+#include "uart.h"
 
 void d12_writecommand(uint8 command)
 {
@@ -25,7 +26,7 @@ uint8 d12_readbyte(void)
 uint16 d12_readID(void)
 {
     uint16 id;
-    d12_writecommand(READ_ID);
+    d12_writecommand(Read_ID);
     id = d12_readbyte();
     id |= ((uint16)d12_readbyte())<<8;
     return id;
@@ -82,13 +83,14 @@ uint8 d12_readendpbuffer(uint8 endp, uint8 len, uint8 *buf)
     #ifdef DEBUG1
     prints("¶Á¶Ëµã");
     printLongInt(endp/2);
-    prints("»º³åÇø")
+    prints("»º³åÇø");
     printLongInt(j);
     prints("×Ö½Ú¡£\r\n");
     #endif
     for (i = 0; i < j; i++) {
         d12_clrrd();
         *(buf+i) = d12_getdata();
+        d12_setrd();
         #ifdef DEBUG1
         printHex(*(buf+i));
         if (((i+1)%16)==0)

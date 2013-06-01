@@ -119,6 +119,7 @@ code uint8 ReportDescriptor[] = {
 /*      End Collection */
 0xc0,
 /* End Collection */
+0xc0
 };
 
 
@@ -393,8 +394,8 @@ void usb_ep0out(void)
         wLength = edp0_buffer[6]+(((uint16)edp0_buffer[7])<<8);
 
         /* D7 is 1, means it is a in request */
-        if ((bmResqustType & 0x80) == 0x80) {
-            switch ((bmRequstType>>5) & 0x03) {
+        if ((bmRequestType & 0x80) == 0x80) {
+            switch ((bmRequestType>>5) & 0x03) {
                 case 0:
                     #ifdef DEBUG0
                     prints("USB标准输入请求：");
